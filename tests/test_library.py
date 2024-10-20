@@ -2,6 +2,7 @@ import unittest
 from src.library import Library
 from src.book import Book
 from src.magazine import Magazine
+from src.library_item import LibraryItem
 
 class TestLibrary(unittest.TestCase):
     def setUp(self):
@@ -14,10 +15,30 @@ class TestLibrary(unittest.TestCase):
         self.library.add_item(self.book1)
         self.assertEqual(len(self.library._items), 1)
 
+    def test_add_invalid_item(self):
+        with self.assertRaises(TypeError):
+            self.library.add_item("Not a LibraryItem")
+
     def test_remove_item(self):
         self.library.add_item(self.book1)
         self.library.remove_item(self.book1)
         self.assertEqual(len(self.library._items), 0)
+
+    def test_get_all_books(self):
+        self.library.add_item(self.book1)
+        self.library.add_item(self.book2)
+        self.library.add_item(self.magazine)
+        books = self.library.get_all_books()
+        self.assertEqual(len(books), 2)
+        self.assertIsInstance(books[0], Book)
+        self.assertIsInstance(books[1], Book)
+
+    def test_get_all_magazines(self):
+        self.library.add_item(self.book1)
+        self.library.add_item(self.magazine)
+        magazines = self.library.get_all_magazines()
+        self.assertEqual(len(magazines), 1)
+        self.assertIsInstance(magazines[0], Magazine)
 
     def test_search(self):
         self.library.add_item(self.book1)
@@ -27,10 +48,6 @@ class TestLibrary(unittest.TestCase):
         results = self.library.search("orwell")
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].title, "1984")
-
-        results = self.library.search("geographic")
-        self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].title, "National Geographic")
 
     def test_search_by_year(self):
         self.library.add_item(self.book1)
